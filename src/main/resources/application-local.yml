@@ -1,0 +1,7 @@
+spring:
+  ai:
+    dashscope:
+      api-key: sk-40af4f24093e4834b1d46958e37abda2
+      chat:
+        options:
+          model: glm-5.1
