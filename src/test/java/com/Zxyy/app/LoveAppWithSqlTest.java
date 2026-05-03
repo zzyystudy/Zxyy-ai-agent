@@ -31,7 +31,7 @@ class LoveAppWithSqlTest {
     @Test
     void doChatWithRag() {
         String chatId = UUID.randomUUID().toString();
-        String message = "我刚谈了一个女朋友 她叫散尽，我想送她100天礼物，该送什么好？";
+        String message = "我现在单身怎么办";
         String answer = loveAppWithSql.doChatWithRag(message, chatId);
     }
 }

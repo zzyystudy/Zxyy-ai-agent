@@ -5,6 +5,7 @@ import com.Zxyy.advisor.CheckAdvisor;
 import com.Zxyy.advisor.MyLoggerAdvisor;
 import com.Zxyy.entity.LoveReport;
 import com.Zxyy.rag.QueryRewriter;
+import com.Zxyy.rag.RetrievalAugmentationAdvisorFactury;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -101,7 +102,8 @@ public class LoveAppWithSql {
         String rewritemessage = queryRewriter.rewrite(message);
         ChatResponse response = chatClient
                 .prompt()
-                .advisors(QuestionAnswerAdvisor.builder(PGVectorStore).build())
+                //.advisors(QuestionAnswerAdvisor.builder(PGVectorStore).build())
+                .advisors(RetrievalAugmentationAdvisorFactury.create(PGVectorStore))
                 .user(rewritemessage)
                 .call()
                 .chatResponse();
