@@ -4,6 +4,7 @@ import com.Zxyy.Memory.MyMemoryInMysql;
 import com.Zxyy.advisor.CheckAdvisor;
 import com.Zxyy.advisor.MyLoggerAdvisor;
 import com.Zxyy.entity.LoveReport;
+import com.Zxyy.rag.QueryRewriter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -86,6 +87,9 @@ public class LoveAppWithSql {
     @Resource
     private VectorStore PGVectorStore;
 
+    @Resource
+    private QueryRewriter queryRewriter;
+
 
     /**
      * 带rag的问答
@@ -94,10 +98,11 @@ public class LoveAppWithSql {
      * @return
      */
     public String doChatWithRag(String message,String chatId){
+        String rewritemessage = queryRewriter.rewrite(message);
         ChatResponse response = chatClient
                 .prompt()
                 .advisors(QuestionAnswerAdvisor.builder(PGVectorStore).build())
-                .user(message)
+                .user(rewritemessage)
                 .call()
                 .chatResponse();
         return response.getResults().get(0).getOutput().getText();
