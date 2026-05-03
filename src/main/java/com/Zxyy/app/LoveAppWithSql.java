@@ -34,7 +34,12 @@ public class LoveAppWithSql {
     public LoveAppWithSql(ChatModel dashscopeChatModel,MyMemoryInMysql myMemoryInMysql) {
         //基于内存的对话记忆
         //1.这里创建了一个chatMemory对象
-        ChatMemory chatMemory = myMemoryInMysql;
+        //ChatMemory chatMemory = myMemoryInMysql;
+        //这里是基于内存的对话记忆功能
+        MessageWindowChatMemory chatMemory = MessageWindowChatMemory.builder()
+                .maxMessages(10)
+                .build();
+
 
         //这里创建一个 spring Ai提供好的advisor对象 我们要学会查看文档
         MessageChatMemoryAdvisor messageChatMemoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory)
@@ -43,7 +48,7 @@ public class LoveAppWithSql {
         //这里我们构建一个chatClient对象  这里我们使用了上面的大模型  这里spring会将这个，模型注入进来
         this.chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
-                .defaultAdvisors(//messageChatMemoryAdvisor, //记忆化存储advisor 这个是mysql实现的
+                .defaultAdvisors(messageChatMemoryAdvisor, //记忆化存储advisor 这个是mysql实现的
                         new MyLoggerAdvisor(),
                         new CheckAdvisor())  //自定义日志拦截器 slf4j info级别
                 .build();
@@ -74,9 +79,12 @@ public class LoveAppWithSql {
 
 
     // RAG 知识问答
-    @Resource
-    private VectorStore loveAppVectorStore;
+
+    //private VectorStore loveAppVectorStore;
     //text-embedding-v3 这是里面调用的embedding模型
+
+    @Resource
+    private VectorStore PGVectorStore;
 
 
     /**
@@ -88,7 +96,7 @@ public class LoveAppWithSql {
     public String doChatWithRag(String message,String chatId){
         ChatResponse response = chatClient
                 .prompt()
-                .advisors(QuestionAnswerAdvisor.builder(loveAppVectorStore).build())
+                .advisors(QuestionAnswerAdvisor.builder(PGVectorStore).build())
                 .user(message)
                 .call()
                 .chatResponse();
