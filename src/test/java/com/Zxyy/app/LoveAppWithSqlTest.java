@@ -34,4 +34,11 @@ class LoveAppWithSqlTest {
         String message = "我现在单身怎么办";
         String answer = loveAppWithSql.doChatWithRag(message, chatId);
     }
+
+    @Test
+    void doChatWithTools() {
+        String chatId = UUID.randomUUID().toString();
+        String message = "现在是什么时间";
+        String answer = loveAppWithSql.doChatWithTools(message, chatId);
+    }
 }

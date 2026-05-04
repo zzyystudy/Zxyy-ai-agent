@@ -37,6 +37,7 @@ import org.springframework.lang.Nullable;
 /**
  * 自定义日志打印类
  * 打印日志为info级别 只输出单词用户提示词和ai回答
+ * TODO 这个日志记录不能打印工具调用的日志信息
  */
 @Slf4j
 public class MyLoggerAdvisor implements CallAdvisor, StreamAdvisor {

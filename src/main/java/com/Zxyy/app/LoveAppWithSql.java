@@ -15,6 +15,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
@@ -99,6 +100,7 @@ public class LoveAppWithSql {
      * @return
      */
     public String doChatWithRag(String message,String chatId){
+        //这个时进行了一次查询扩展
         String rewritemessage = queryRewriter.rewrite(message);
         ChatResponse response = chatClient
                 .prompt()
@@ -107,6 +109,26 @@ public class LoveAppWithSql {
                 .user(rewritemessage)
                 .call()
                 .chatResponse();
+        return response.getResults().get(0).getOutput().getText();
+    }
+
+
+    //Toolcall 工具调用
+    @Resource
+    ToolCallback[] allTools;
+
+    public String doChatWithTools(String message,String chatId){
+        //
+        //String rewritemessage = queryRewriter.rewrite(message);
+        ChatResponse response = chatClient
+                .prompt()
+                //.advisors(QuestionAnswerAdvisor.builder(PGVectorStore).build())
+                .advisors(RetrievalAugmentationAdvisorFactury.create(PGVectorStore))
+                .toolCallbacks(allTools)
+                .user(message)
+                .call()
+                .chatResponse();
+
         return response.getResults().get(0).getOutput().getText();
     }
 

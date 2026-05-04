@@ -5,7 +5,7 @@ spring:
     active: local
   # application.yml
   datasource:
-    url: jdbc:postgresql://192.168.249.156:5432/postgres
+    url: jdbc:postgresql://192.168.249.157:5432/postgres
     username: root
     password: 123456
   ai:
