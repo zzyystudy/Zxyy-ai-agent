@@ -12,7 +12,7 @@ public class ResourceDownloadTool {
     @Tool(description = "Download a resource from a given URL")
     String downloadResource(@ToolParam(description = "URL of the resource to download") String url,
                             @ToolParam(description = "Name of the file to save the resource as") String filename) {
-        String filePath = FileConstant.FILE_PATH + File.separator +"/download";
+        String filePath = FileConstant.FILE_PATH + File.separator +"download";
         String fileName = filePath + File.separator + filename;
         try {
             HttpUtil.downloadFile(url, new File(fileName));

@@ -38,7 +38,7 @@ class LoveAppWithSqlTest {
     @Test
     void doChatWithTools() {
         String chatId = UUID.randomUUID().toString();
-        String message = "现在是什么时间";
+        String message = "帮我下载一个小狗的图片到本地";
         String answer = loveAppWithSql.doChatWithTools(message, chatId);
     }
 }

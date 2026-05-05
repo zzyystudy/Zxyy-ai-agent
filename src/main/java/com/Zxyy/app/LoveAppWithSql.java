@@ -6,6 +6,7 @@ import com.Zxyy.advisor.MyLoggerAdvisor;
 import com.Zxyy.entity.LoveReport;
 import com.Zxyy.rag.QueryRewriter;
 import com.Zxyy.rag.RetrievalAugmentationAdvisorFactury;
+import io.modelcontextprotocol.client.McpSyncClient;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,11 +16,15 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @Component
@@ -119,7 +124,14 @@ public class LoveAppWithSql {
     @Resource
     ToolCallback[] allTools;
 
+
+    @Autowired
+    private List<McpSyncClient> mcpSyncClients;  // For sync client
+
+
     public String doChatWithTools(String message,String chatId){
+
+
         //
         //String rewritemessage = queryRewriter.rewrite(message);
         ChatResponse response = chatClient

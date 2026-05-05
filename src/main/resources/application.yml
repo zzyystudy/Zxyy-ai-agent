@@ -15,6 +15,15 @@ spring:
         distance-type: COSINE_DISTANCE
         dimensions: 1024        #这个默认使用的是text-embedding-v3 生成向量是1024
         max-document-batch-size: 10000
+    mcp:
+      client:
+        type: sync
+        request-timeout: 20s
+        stdio:
+          servers-configuration: classpath:mcp-servers.json
+
+
+
 
 mybatis:
   configuration:
