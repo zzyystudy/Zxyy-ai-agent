@@ -15,6 +15,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
@@ -30,11 +31,12 @@ public class LoveAppWithSql {
 
 
 
+
     /**
      * 构造函数
      * @param dashscopeChatModel
      */
-    public LoveAppWithSql(ChatModel dashscopeChatModel,MyMemoryInMysql myMemoryInMysql) {
+    public LoveAppWithSql(ChatModel dashscopeChatModel, MyMemoryInMysql myMemoryInMysql, ToolCallingManager defaultToolCallingManager) {
         //基于内存的对话记忆
         //1.这里创建了一个chatMemory对象
         //ChatMemory chatMemory = myMemoryInMysql;
@@ -52,7 +54,7 @@ public class LoveAppWithSql {
         this.chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(messageChatMemoryAdvisor, //记忆化存储advisor 这个是mysql实现的
-                        new MyLoggerAdvisor(),
+                        new MyLoggerAdvisor(defaultToolCallingManager),
                         new CheckAdvisor())  //自定义日志拦截器 slf4j info级别
                 .build();
     }

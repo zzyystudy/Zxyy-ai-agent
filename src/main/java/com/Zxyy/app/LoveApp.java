@@ -3,6 +3,7 @@ package com.Zxyy.app;
 import com.Zxyy.advisor.CheckAdvisor;
 import com.Zxyy.advisor.MyLoggerAdvisor;
 import com.Zxyy.entity.LoveReport;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -11,6 +12,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public class LoveApp {
      * 构造函数
      * @param dashscopeChatModel
      */
-    public LoveApp(ChatModel dashscopeChatModel) {
+    public LoveApp(ChatModel dashscopeChatModel,ToolCallingManager defaultToolCallingManager) {
         //基于内存的对话记忆
         //1.这里创建了一个chatMemory对象
         ChatMemory chatMemory = MessageWindowChatMemory.builder()
@@ -41,7 +43,7 @@ public class LoveApp {
         this.chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(messageChatMemoryAdvisor,//这里一定要将我们的顾问放进去
-                        new MyLoggerAdvisor(),
+                        new MyLoggerAdvisor(defaultToolCallingManager),
                         new CheckAdvisor())  //自定义日志拦截器 slf4j info级别
                 .build();
     }
