@@ -20,6 +20,8 @@ public class ToolbackConfig {
 
     @Resource
     private SyncMcpToolCallbackProvider toolCallbackProvider;
+    //ToolCallback[] mcpTools = toolCallbackProvider.getToolCallbacks();
+    //这个函数不能写在外面 spring在执行的时候 会优先执行 下面这个然后爆空指针异常
 
     @Bean
     public ToolCallback[] allTools(){
