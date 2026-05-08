@@ -5,9 +5,10 @@ spring:
     active: local
   # application.yml
   datasource:
-    url: jdbc:postgresql://192.168.249.158:5432/postgres
-    username: root
-    password: 123456
+      url: jdbc:mysql://localhost:3306/chat_memory?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
   ai:
     vectorstore:
       pgvector:
@@ -15,6 +16,7 @@ spring:
         distance-type: COSINE_DISTANCE
         dimensions: 1024        #这个默认使用的是text-embedding-v3 生成向量是1024
         max-document-batch-size: 10000
+
     mcp:
       client:
         type: sync

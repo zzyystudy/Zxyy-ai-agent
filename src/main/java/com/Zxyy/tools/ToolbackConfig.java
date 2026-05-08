@@ -29,12 +29,14 @@ public class ToolbackConfig {
         DateTimeTool dateTimeTool = new DateTimeTool();
         FileReadAndWriteTool fileReadAndWriteTool = new FileReadAndWriteTool();
         ResourceDownloadTool resourceDownloadTool = new ResourceDownloadTool();
+        TerminateTool terminateTool = new TerminateTool();
 
         // 获取本地工具的ToolCallback数组
         ToolCallback[] localTools = ToolCallbacks.from(
                 dateTimeTool,
                 fileReadAndWriteTool,
-                resourceDownloadTool);
+                resourceDownloadTool,
+                terminateTool);
 
         // 获取MCP工具
         ToolCallback[] mcpTools = toolCallbackProvider.getToolCallbacks();

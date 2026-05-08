@@ -93,8 +93,8 @@ public class LoveAppWithSql {
     //private VectorStore loveAppVectorStore;
     //text-embedding-v3 这是里面调用的embedding模型
 
-    @Resource
-    private VectorStore PGVectorStore;
+    //@Resource
+    //private VectorStore PGVectorStore;
 
     @Resource
     private QueryRewriter queryRewriter;
@@ -112,7 +112,7 @@ public class LoveAppWithSql {
         ChatResponse response = chatClient
                 .prompt()
                 //.advisors(QuestionAnswerAdvisor.builder(PGVectorStore).build())
-                .advisors(RetrievalAugmentationAdvisorFactury.create(PGVectorStore))
+                //.advisors(RetrievalAugmentationAdvisorFactury.create(PGVectorStore))
                 .user(rewritemessage)
                 .call()
                 .chatResponse();
@@ -125,8 +125,8 @@ public class LoveAppWithSql {
     ToolCallback[] allTools;
 
 
-    @Autowired
-    private List<McpSyncClient> mcpSyncClients;  // For sync client
+    /*@Autowired
+    private List<McpSyncClient> mcpSyncClients;  // For sync client*/
 
 
     public String doChatWithTools(String message,String chatId){
@@ -137,7 +137,7 @@ public class LoveAppWithSql {
         ChatResponse response = chatClient
                 .prompt()
                 //.advisors(QuestionAnswerAdvisor.builder(PGVectorStore).build())
-                .advisors(RetrievalAugmentationAdvisorFactury.create(PGVectorStore))
+                //.advisors(RetrievalAugmentationAdvisorFactury.create(PGVectorStore))
                 .toolCallbacks(allTools)
                 .user(message)
                 .call()

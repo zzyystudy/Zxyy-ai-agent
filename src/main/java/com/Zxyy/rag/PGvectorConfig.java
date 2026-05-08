@@ -6,10 +6,12 @@ import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +27,12 @@ public class PGvectorConfig {
     @Resource
     private MyKeyWordEnricher myKeyWordEnricher;
 
-    @Bean
-    public VectorStore PGVectorStore(JdbcTemplate jdbcTemplate, EmbeddingModel dashscopeEmbeddingModel) {
+    //@Bean
+    public VectorStore PGVectorStore(JdbcTemplate JdbcTemplate, EmbeddingModel dashscopeEmbeddingModel) {
+
+
         //这里是配置我们d
-        VectorStore vectorStore = PgVectorStore.builder(jdbcTemplate, dashscopeEmbeddingModel)
+        VectorStore vectorStore = PgVectorStore.builder(JdbcTemplate, dashscopeEmbeddingModel)
                 .dimensions(1024)                    // Optional: defaults to model dimensions or 1536
                 .distanceType(COSINE_DISTANCE)       // Optional: defaults to COSINE_DISTANCE
                 .indexType(HNSW)                     // Optional: defaults to HNSW
