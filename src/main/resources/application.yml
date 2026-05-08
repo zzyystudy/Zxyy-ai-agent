@@ -5,10 +5,9 @@ spring:
     active: local
   # application.yml
   datasource:
-      url: jdbc:mysql://localhost:3306/chat_memory?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true
-      username: root
-      password: 123456
-      driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://192.168.249.161:5432/postgres
+    username: root
+    password: 123456
   ai:
     vectorstore:
       pgvector:

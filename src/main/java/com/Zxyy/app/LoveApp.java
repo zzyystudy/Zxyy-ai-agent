@@ -13,7 +13,9 @@ import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.model.tool.ToolCallingManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -96,5 +98,25 @@ public class LoveApp {
         String content = loveReport.toString();
         log.info("AI:{}",content);
         return loveReport;
+    }
+
+
+    /**
+     * 流式调用
+     * @param message
+     * @param chatId
+     * @return
+     */
+    public Flux<String> doChatWithStream(String message,String chatId){
+        return chatClient.prompt()
+                .user(message)
+                .advisors(new Consumer<ChatClient.AdvisorSpec>() {
+                    @Override
+                    public void accept(ChatClient.AdvisorSpec advisorSpec) {
+                        advisorSpec.param("chat_memory_conversation_id", chatId);
+                    }
+                })
+                .stream()
+                .content();
     }
 }

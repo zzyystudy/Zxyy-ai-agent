@@ -27,7 +27,7 @@ public class PGvectorConfig {
     @Resource
     private MyKeyWordEnricher myKeyWordEnricher;
 
-    //@Bean
+    @Bean
     public VectorStore PGVectorStore(JdbcTemplate JdbcTemplate, EmbeddingModel dashscopeEmbeddingModel) {
 
 

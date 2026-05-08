@@ -8,9 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 抽象基础代理 用于管理代理状态和执行流程
@@ -94,6 +97,93 @@ public abstract class BaseAgent {
             cleanup();
         }
 
+    }
+
+    /**
+     * 运行代理 流式输出
+     * @param userPrompt
+     * @return
+     */
+    public SseEmitter runSse(String userPrompt){
+
+        SseEmitter sseEmitter = new SseEmitter(300000L);
+
+        //异步方法返回
+        CompletableFuture.runAsync(() -> {
+            try {
+                if(this.state != AgentState.IDLE){
+                    sseEmitter.send("Cannot run agent form state:" + this.state);
+                    sseEmitter.complete();
+                    return;
+                }
+                //如果是空不执行
+                if(StrUtil.isBlank(userPrompt)){
+                    sseEmitter.send("Cannot run agent with empty userPrompt");
+                    sseEmitter.complete();
+                    return;
+                    //throw new RuntimeException("Cannot run agent with empty userPrompt");
+                }
+            } catch (Exception e) {
+                state = AgentState.ERROR;
+                log.error("Error running agent: ", e);
+                sseEmitter.completeWithError(e);
+            }
+
+            //执行
+            this.state = AgentState.RUNNING;
+            //记录消息上下文
+            messageList.add(new UserMessage(userPrompt));
+            //保存结果列表
+            List<String> results = new ArrayList<>();
+            try {
+                //执行循环
+                for(int i = 0; i < maxSteps && this.state == AgentState.RUNNING; i++){
+                    int stepNum = i + 1;
+                    currentStep = stepNum;
+                    log.info("Running step {}/{}", stepNum,maxSteps);
+                    //单步执行得到结果
+                    String result = step();
+                    String stepResult = "Step " + stepNum + ": " + result;
+                    results.add(stepResult);
+                    //每执行一次就响应一下
+                    sseEmitter.send(stepResult);
+                }
+
+                if(currentStep>=maxSteps){
+                    state = AgentState.FINISHED;
+                    sseEmitter.send("Max steps reached. Stopping.");
+                    sseEmitter.complete();
+                    results.add("Max steps reached. Stopping.");
+                }
+                //return String.join("\n", results);
+
+                //这里正常结束
+                sseEmitter.complete();
+
+
+            } catch (Exception e) {
+                state = AgentState.ERROR;
+                log.error("Error running agent: ", e);
+                try {
+                    sseEmitter.send("Error running agent: " + e.getMessage());
+                } catch (IOException ex) {
+                    sseEmitter.completeWithError(ex);
+                }
+                sseEmitter.complete();
+                //return "Error running agent: " + e.getMessage();
+            } finally {
+                //清理资源
+                cleanup();
+            }
+        });
+
+        sseEmitter.onTimeout(()->{
+            this.state = AgentState.ERROR;
+            this.cleanup();
+            log.error("Agent timed out.");
+        });
+
+        return sseEmitter;
     }
 
 
